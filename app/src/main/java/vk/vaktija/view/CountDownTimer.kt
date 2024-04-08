@@ -1,81 +1,90 @@
 package vk.vaktija.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.*
 
 @Composable
 fun CountDownTimer(timeList: List<String>) {
-    val currentTime = Calendar.getInstance().timeInMillis // Get current time in milliseconds
-    val nearestTimeMillis = getNearestTimeInMillis(timeList, currentTime)
 
-    // Calculate remaining milliseconds
-    val remainingMillis = nearestTimeMillis - currentTime
+    val isRunning by remember { mutableStateOf(true) } // Flag to control timer
 
-    // Convert milliseconds to hours, minutes, seconds
-    val hours = (remainingMillis / (1000 * 60 * 60)) % 24
-    val minutes = (remainingMillis / (1000 * 60)) % 60
-    val seconds = (remainingMillis / 1000) % 60
-
-    var isRunning by remember { mutableStateOf(true) } // Flag to control timer
+    var timeLeftData by remember { mutableStateOf(TimeLeftData()) }
 
     LaunchedEffect(isRunning) {
-        if (isRunning) {
+        while (isRunning) {
             delay(1000) // Update every second
-            isRunning = remainingMillis > 0 // Stop when time reaches
+            val value = getNearestTimeInMillis(timeList) ?: return@LaunchedEffect
+            val seconds = value.first / 1000
+            val minutes = seconds / 60
+            val hours = minutes / 60
+
+            val minutesFormatted = minutes % 60
+            val secondsFormatted = seconds % 60
+
+            val secondsAsString = formatTime(secondsFormatted)
+            val minutesAsString = formatTime(minutesFormatted)
+            val hoursAsString = formatTime(hours)
+
+            timeLeftData = TimeLeftData(hoursAsString, minutesAsString, secondsAsString)
         }
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Time Until Nearest Prayer:", style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(8.dp))
         Row {
-            Text(
-                text = "%02d".format(hours), // Format hours with zero padding
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text("h ", style = MaterialTheme.typography.bodyMedium)
-            Text(
-                text = "%02d".format(minutes), // Format minutes with zero padding
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text("m ", style = MaterialTheme.typography.bodyMedium)
-            Text(
-                text = "%02d".format(seconds), // Format seconds with zero padding
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text("s", style = MaterialTheme.typography.bodyMedium)
+            Text(text = timeLeftData.hours, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+            Text(text = ":")
+            Text(text = timeLeftData.minutes, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+            Text(text = ":")
+            Text(text = timeLeftData.seconds, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.tertiary)
         }
     }
 }
 
-fun getNearestTimeInMillis(timeList: List<String>, currentTimeMillis: Long): Long {
-    val timeList = listOf(
-        "3:37",
-        "6:18",
-        "12:51",
-        "16:26",
-        "19:22",
-        "20:50"
-    )
+fun getNearestTimeInMillis(timeList: List<String>): Pair<Long, Int>? {
+    val currentTime = Calendar.getInstance()
 
-    val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault()) // Format for parsing time strings
-    val sortedTimes = timeList.sortedBy { timeFormatter.parse(it).time } // Sort times in ascending order
+    val currentDate = LocalDateTime.now().toLocalDate()
 
     // Find the first time after the current time
-    val index = sortedTimes.indexOfFirst { timeFormatter.parse(it).time > currentTimeMillis }
+    val index = timeList.indexOfFirst {
+        val finalTime = if (it.count() == 4) "0$it" else it
 
-    // If no time is after current time, return first time in the list
-    return if (index == -1) {
-        timeFormatter.parse(sortedTimes[0]).time
-    } else {
-        timeFormatter.parse(sortedTimes[index]).time
+        val timeObj = LocalTime.parse(finalTime)
+        val dateTimeObj = LocalDateTime.of(currentDate, timeObj)
+
+        dateTimeObj.atZone(ZoneId.systemDefault()).toInstant()
+            .toEpochMilli() > currentTime.timeInMillis
     }
+
+    if (index == -1) return null
+
+    val timeStr = timeList[index]
+
+    val hours = timeStr.substringBefore(":").toInt()
+    val minutes = timeStr.substringAfter(":").toInt()
+
+    val calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()))
+    calendar.set(Calendar.HOUR_OF_DAY, hours)
+    calendar.set(Calendar.MINUTE, minutes)
+    calendar.set(Calendar.SECOND, 0)
+
+    val nextPrayerTime = calendar.time
+    val currentTimeInLocalTime = currentTime.time
+
+    return Pair(nextPrayerTime.time - currentTimeInLocalTime.time, index)
+}
+
+private fun formatTime(time: Long): String = if (time < 10) {
+    "0${time}"
+} else {
+    time.toString()
 }
