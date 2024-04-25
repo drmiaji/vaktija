@@ -77,7 +77,7 @@ fun HomeScreenView(viewModel: HomeScreenViewModel) {
                 PrayerTimeRow(
                     label = "Jacija",
                     time = data.prayerTimes[5]
-                ) // Assuming Imsak is the last prayer time
+                )
             }
         }
     }
