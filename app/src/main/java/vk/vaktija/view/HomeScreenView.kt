@@ -85,7 +85,6 @@ fun HomeScreenView(viewModel: HomeScreenViewModel) {
 
 @Composable
 fun PrayerTimeRow(label: String, time: String) {
-    ///val bcg = MaterialTheme.colorScheme.primary.copy(alpha = 0.5F)
     Row(
         modifier = Modifier
             .fillMaxWidth()
