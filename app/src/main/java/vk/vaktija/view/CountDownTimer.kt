@@ -6,8 +6,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import kotlinx.coroutines.delay
+import vk.vaktija.timeStringToLocalTime
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 
@@ -20,7 +20,6 @@ fun CountDownTimer(timeList: List<String>) {
 
     LaunchedEffect(isRunning) {
         while (isRunning) {
-            delay(1000) // Update every second
             val value = getNearestTimeInMillis(timeList) ?: return@LaunchedEffect
             val seconds = value.first / 1000
             val minutes = seconds / 60
@@ -34,6 +33,7 @@ fun CountDownTimer(timeList: List<String>) {
             val hoursAsString = formatTime(hours)
 
             timeLeftData = TimeLeftData(hoursAsString, minutesAsString, secondsAsString)
+            delay(1000)
         }
     }
 
@@ -55,10 +55,8 @@ fun getNearestTimeInMillis(timeList: List<String>): Pair<Long, Int>? {
 
     // Find the first time after the current time
     val index = timeList.indexOfFirst {
-        val finalTime = if (it.count() == 4) "0$it" else it
-
-        val timeObj = LocalTime.parse(finalTime)
-        val dateTimeObj = LocalDateTime.of(currentDate, timeObj)
+        val prayerTime = timeStringToLocalTime(it)
+        val dateTimeObj = LocalDateTime.of(currentDate, prayerTime)
 
         dateTimeObj.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() > currentTime.timeInMillis

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -22,11 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vk.vaktija.R
+import vk.vaktija.isCurrentPrayerTime
+import vk.vaktija.models.PrayerTimeResponse
+import vk.vaktija.models.enums.PrayerTimeIndex
+import vk.vaktija.ui.theme.BlueWithOpacity
 
 @Composable
 fun HomeScreenView(viewModel: HomeScreenViewModel) {
@@ -36,47 +41,82 @@ fun HomeScreenView(viewModel: HomeScreenViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
-        contentAlignment = Alignment.TopCenter,
+        contentAlignment = Alignment.Center,
     ) {
         if (prayerTimes.value == null) {
             CircularProgressIndicator()
         } else {
             val data = prayerTimes.value ?: return
-            Column(modifier = Modifier.padding(16.dp)) {
+
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         LocationContainer(data.location)
+                        Spacer(modifier = Modifier.height(20.dp))
                         CountDownTimer(timeList = data.prayerTimes)
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Icon(
-                        painter = painterResource(R.drawable.mosque),
+                        painter = painterResource(R.drawable.home_icon),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
-                // Text(text = "Date: ${data.date[0]} (${data.date[1]})", fontSize = 16.sp)  // Consider adding date if relevant
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Prayer time rows with visual separators
-                PrayerTimeRow(label = "Zora", time = data.prayerTimes[0])
-                Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
-                PrayerTimeRow(label = "Izlazak Sunca", time = data.prayerTimes[1])
-                Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
-                PrayerTimeRow(label = "Podne", time = data.prayerTimes[2])
-                Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
-                PrayerTimeRow(label = "Ikindija", time = data.prayerTimes[3])
-                Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
-                PrayerTimeRow(label = "Akšam", time = data.prayerTimes[4])
-                Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = "Datum",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = data.date[0],
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = data.date[1],
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+                PrayerTimeRow("Zora", data, R.drawable.fajr_icon,
+                    PrayerTimeIndex.FAJR
+                )
+                Divider(modifier = Modifier.padding(horizontal = 8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
                 PrayerTimeRow(
-                    label = "Jacija",
-                    time = data.prayerTimes[5]
+                    "Izlazak Sunca",
+                    data,
+                    R.drawable.sunrise_icon,
+                    PrayerTimeIndex.SUNRISE
+                )
+                Divider(modifier = Modifier.padding(horizontal = 8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
+                PrayerTimeRow("Podna", data, R.drawable.duhur_icon, PrayerTimeIndex.DUHUR)
+                Divider(modifier = Modifier.padding(horizontal = 8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
+                PrayerTimeRow("Ikindija", data, R.drawable.asr_icon, PrayerTimeIndex.ASR)
+                Divider(modifier = Modifier.padding(horizontal = 8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
+                PrayerTimeRow("Akšam", data, R.drawable.magrib_icon, PrayerTimeIndex.MAGHRIB)
+                Divider(modifier = Modifier.padding(horizontal = 8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2F))
+                PrayerTimeRow(
+                    "Jacija",
+                    data,
+                    R.drawable.ishaa_icon,
+                    PrayerTimeIndex.ISHAA
                 )
             }
         }
@@ -84,16 +124,60 @@ fun HomeScreenView(viewModel: HomeScreenViewModel) {
 }
 
 @Composable
-fun PrayerTimeRow(label: String, time: String) {
+fun PrayerTimeRow(
+    label: String,
+    data: PrayerTimeResponse,
+    icon: Int,
+    prayerTimeIndex: PrayerTimeIndex
+) {
+    val currentPrayerTime = data.prayerTimes[prayerTimeIndex.index]
+    val nextPrayerTimeIndex = if (prayerTimeIndex == PrayerTimeIndex.ISHAA) {
+        0
+    } else {
+        prayerTimeIndex.index + 1
+    }
+    val nextPrayerTime = data.prayerTimes[nextPrayerTimeIndex]
+    val isIshaa = prayerTimeIndex == PrayerTimeIndex.ISHAA
+    val backgroundColor = if (isCurrentPrayerTime(currentPrayerTime, nextPrayerTime, isIshaa)) {
+        BlueWithOpacity
+    } else {
+        Color.White
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
-            .padding(vertical = 8.dp),
+            .background(backgroundColor)
+            .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium, color = Color.Gray, fontSize = 16.sp)
-        Text(text = time, style = MaterialTheme.typography.bodyMedium, color = Color.Gray, fontSize = 16.sp)
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .width(40.dp)
+                    .padding(end = 16.dp),
+                painter = painterResource(icon),
+                contentDescription = label,
+                tint = Color.Unspecified
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text(
+            text = data.prayerTimes[prayerTimeIndex.index],
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -105,7 +189,7 @@ fun LocationContainer(location: String) {
     ) {
         Icon(
             modifier = Modifier.height(26.dp),
-            painter = painterResource(R.drawable.location),
+            painter = painterResource(R.drawable.location_icon),
             tint = Color.Unspecified,
             contentDescription = null
         )
@@ -114,9 +198,7 @@ fun LocationContainer(location: String) {
             "$location, BiH",
             modifier = Modifier.padding(0.dp),
             color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontFamily = FontFamily.Serif,
-            fontWeight = FontWeight.Light
+            fontSize = 18.sp,
         )
     }
 }
