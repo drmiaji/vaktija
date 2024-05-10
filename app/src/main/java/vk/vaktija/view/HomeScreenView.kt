@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vk.vaktija.R
-import vk.vaktija.isCurrentPrayerTime
+import vk.vaktija.utils.isCurrentPrayerTime
 import vk.vaktija.models.PrayerTimeResponse
 import vk.vaktija.models.enums.PrayerTimeIndex
 import vk.vaktija.ui.theme.BlueWithOpacity
@@ -60,7 +60,7 @@ fun HomeScreenView(viewModel: HomeScreenViewModel) {
                     ) {
                         LocationContainer(data.location)
                         Spacer(modifier = Modifier.height(20.dp))
-                        CountDownTimer(timeList = data.prayerTimes)
+                        CountDownTimerView(timeList = data.prayerTimes)
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Icon(
@@ -171,13 +171,20 @@ fun PrayerTimeRow(
                 fontWeight = FontWeight.Bold
             )
         }
-        Text(
-            text = data.prayerTimes[prayerTimeIndex.index],
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = data.prayerTimes[prayerTimeIndex.index],
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            SwitchView()
+        }
     }
 }
 

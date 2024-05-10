@@ -13,7 +13,6 @@ import vk.vaktija.repository.PrayerTimeRepository
 class HomeScreenViewModel(
     private val prayerTimeRepository: PrayerTimeRepository
 ) : ViewModel() {
-
     private val _prayerTimes = MutableSharedFlow<PrayerTimeResponse>()
     val prayerTimes: SharedFlow<PrayerTimeResponse> = _prayerTimes
 
