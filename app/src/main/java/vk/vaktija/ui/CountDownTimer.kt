@@ -1,11 +1,13 @@
 package vk.vaktija.ui
 
+import android.os.CountDownTimer
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import kotlinx.coroutines.delay
+import vk.vaktija.utils.Constants.ONE_SECOND_IN_MILLIS
 import vk.vaktija.utils.timeStringToLocalTime
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -13,27 +15,33 @@ import java.util.*
 
 @Composable
 fun CountDownTimer(timeList: List<String>) {
-
-    val isRunning by remember { mutableStateOf(true) } // Flag to control timer
-
     var timeLeftData by remember { mutableStateOf(TimeLeftData()) }
 
-    LaunchedEffect(isRunning) {
-        while (isRunning) {
-            val value = getNearestTimeInMillis(timeList) ?: return@LaunchedEffect
-            val seconds = value.first / 1000
-            val minutes = seconds / 60
-            val hours = minutes / 60
+    DisposableEffect(Unit) {
+        val nearestTime = getNearestTimeInMillis(timeList)?.first ?: 0L
+        val timer = object : CountDownTimer(nearestTime, ONE_SECOND_IN_MILLIS.toLong()) {
+            override fun onTick(p0: Long) {
+                val seconds = p0 / ONE_SECOND_IN_MILLIS
+                val minutes = seconds / 60
+                val hours = minutes / 60
 
-            val minutesFormatted = minutes % 60
-            val secondsFormatted = seconds % 60
+                val minutesFormatted = minutes % 60
+                val secondsFormatted = seconds % 60
 
-            val secondsAsString = formatTime(secondsFormatted)
-            val minutesAsString = formatTime(minutesFormatted)
-            val hoursAsString = formatTime(hours)
+                val secondsAsString = formatTime(secondsFormatted)
+                val minutesAsString = formatTime(minutesFormatted)
+                val hoursAsString = formatTime(hours)
 
-            timeLeftData = TimeLeftData(hoursAsString, minutesAsString, secondsAsString)
-            delay(1000)
+                timeLeftData = TimeLeftData(hoursAsString, minutesAsString, secondsAsString)
+            }
+
+            override fun onFinish() {
+                // nothing
+            }
+        }.start()
+
+        onDispose {
+            timer.cancel()
         }
     }
 
