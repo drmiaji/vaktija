@@ -1,9 +1,9 @@
-package vk.vaktija.repository
+package vk.vaktija.data.repository
 
 import kotlinx.coroutines.flow.flow
-import vk.vaktija.models.NetworkResult
-import vk.vaktija.models.enums.City
-import vk.vaktija.network.ApiService
+import vk.vaktija.data.models.NetworkResult
+import vk.vaktija.data.models.enums.City
+import vk.vaktija.data.remote.ApiService
 
 class PrayerTimeRepositoryImpl(
     private val api: ApiService

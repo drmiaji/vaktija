@@ -1,4 +1,4 @@
-package vk.vaktija.models.enums
+package vk.vaktija.data.models.enums
 
 enum class City(val position: Int) {
     BANOVICI(0),

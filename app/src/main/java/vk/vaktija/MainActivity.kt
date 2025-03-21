@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
 import androidx.lifecycle.viewmodel.compose.viewModel
 import vk.vaktija.ui.theme.VaktijaTheme
-import vk.vaktija.view.HomeScreenView
-import vk.vaktija.view.HomeScreenViewModel
-import vk.vaktija.view.viewModelFactory
+import vk.vaktija.ui.HomeScreenView
+import vk.vaktija.ui.HomeScreenViewModel
+import vk.vaktija.ui.viewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package vk.vaktija.models
+package vk.vaktija.data.models
 
 import com.google.gson.annotations.SerializedName
 

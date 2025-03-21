@@ -5,8 +5,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import vk.vaktija.network.ApiService
-import vk.vaktija.repository.PrayerTimeRepositoryImpl
+import vk.vaktija.data.remote.ApiService
+import vk.vaktija.data.repository.PrayerTimeRepositoryImpl
 
 interface AppModule {
     val apiService: ApiService

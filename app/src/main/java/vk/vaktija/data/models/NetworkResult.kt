@@ -1,4 +1,4 @@
-package vk.vaktija.models
+package vk.vaktija.data.models
 
 sealed class NetworkResult<T>(
     val data: T? = null,

@@ -1,4 +1,4 @@
-package vk.vaktija.view
+package vk.vaktija.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import vk.vaktija.R
-import vk.vaktija.isCurrentPrayerTime
-import vk.vaktija.models.PrayerTimeResponse
-import vk.vaktija.models.enums.PrayerTimeIndex
+import vk.vaktija.utils.isCurrentPrayerTime
+import vk.vaktija.data.models.PrayerTimeResponse
+import vk.vaktija.data.models.enums.PrayerTimeIndex
 import vk.vaktija.ui.theme.BlueWithOpacity
 
 @Composable

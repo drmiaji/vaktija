@@ -1,8 +1,8 @@
-package vk.vaktija.network
+package vk.vaktija.data.remote
 
 import retrofit2.http.GET
 import retrofit2.http.Path
-import vk.vaktija.models.PrayerTimeResponse
+import vk.vaktija.data.models.PrayerTimeResponse
 
 interface ApiService {
 

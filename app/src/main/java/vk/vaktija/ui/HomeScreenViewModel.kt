@@ -1,14 +1,14 @@
-package vk.vaktija.view
+package vk.vaktija.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import vk.vaktija.models.NetworkResult
-import vk.vaktija.models.PrayerTimeResponse
-import vk.vaktija.models.enums.City
-import vk.vaktija.repository.PrayerTimeRepository
+import vk.vaktija.data.models.NetworkResult
+import vk.vaktija.data.models.PrayerTimeResponse
+import vk.vaktija.data.models.enums.City
+import vk.vaktija.data.repository.PrayerTimeRepository
 
 class HomeScreenViewModel(
     private val prayerTimeRepository: PrayerTimeRepository

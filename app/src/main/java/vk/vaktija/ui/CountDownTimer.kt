@@ -1,4 +1,4 @@
-package vk.vaktija.view
+package vk.vaktija.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import kotlinx.coroutines.delay
-import vk.vaktija.timeStringToLocalTime
+import vk.vaktija.utils.timeStringToLocalTime
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*

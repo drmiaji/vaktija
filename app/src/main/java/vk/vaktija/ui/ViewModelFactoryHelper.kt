@@ -1,4 +1,4 @@
-package vk.vaktija.view
+package vk.vaktija.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

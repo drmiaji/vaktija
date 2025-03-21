@@ -1,4 +1,4 @@
-package vk.vaktija
+package vk.vaktija.utils
 
 import java.time.LocalDateTime
 import java.time.LocalTime

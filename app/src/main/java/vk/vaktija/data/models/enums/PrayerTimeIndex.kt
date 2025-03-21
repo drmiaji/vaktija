@@ -1,4 +1,4 @@
-package vk.vaktija.models.enums
+package vk.vaktija.data.models.enums
 
 enum class PrayerTimeIndex(val index: Int) {
     FAJR(0),
