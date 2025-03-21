@@ -36,7 +36,7 @@ fun CountDownTimer(timeList: List<String>) {
             }
 
             override fun onFinish() {
-                // nothing
+                this.start()
             }
         }.start()
 
