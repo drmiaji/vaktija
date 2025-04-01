@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "vk.vaktija"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "vk.vaktija"
-        minSdk = 26
-        targetSdk = 34
+        minSdk = 23
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
